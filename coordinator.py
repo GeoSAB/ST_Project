@@ -6,7 +6,8 @@ from digi.xbee.devices import *
 data = []
 
 
-def receive_data():
+def receive_data(rm_device):
+    
     
 def generate_hash(str):
     return hashlib.md5(str)
@@ -21,6 +22,7 @@ def answer(Msg, remote_device):
 def main():
     #device = XBeeDevice("/dev/tty.usbserial-A50285BI", 9600)
     #device.open()
+
 
     while(True):
         hash = "" hs:
