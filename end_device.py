@@ -6,6 +6,7 @@ import hashlib
 data_to_send = ""
 data_hash = ""
 num_of_line = 0
+drone_id = "key"
 
 def read_sensor_data(line_num):
     with open("data.txt") as file:
@@ -15,23 +16,35 @@ def read_sensor_data(line_num):
 
 def generate_answer(Msg):
 
-    data = Msg.data.decode()
-    remote_device = Msg.remote_device
+    #data = Msg.data.decode()
+    data = "rq:hello"
+    #remote_device = Msg.remote_device
+    remote_device = "key"
+    global num_of_line
 
     if (remote_device == drone_id):
         #treat message
 
-        if (data == "Request"):
-            global data_to_send = read_sensor_data(num_of_line)
-            global data_hash = hashlib.md5(data_to_send).hexdigest()
+        code = data[0:2]
+
+        if (code == "rq"):
+            global data_to_send 
+            data_to_send = read_sensor_data(num_of_line).encode()
+            global data_hash 
+            data_hash = hashlib.md5(data_to_send).hexdigest()
 
             return remote_device, read_sensor_data(num_of_line)
 
-        elif (data.hexdigest() == data_hash):
-            return remote_device, "OK"
+        elif (code == "hs"):
+            if (data[2:].hexdigest() == data_hash):
+                num_of_line += 1
+                return remote_device, "an:ok"
 
+            else:
+                num_of_line -= 1
+                return remote_device, "an:nk"
         else:
-            return remote_device, "NOT OK"
+            remote_device, "an:unknown"
 
     else:
         return null, null
@@ -40,16 +53,18 @@ def generate_answer(Msg):
 
 def main():
 
-    device = XBeeDevice("/dev/ttyUSB1", 9600)
-    device.open()
+    #device = XBeeDevice("/dev/ttyUSB1", 9600)
+    #device.open()
 
     while(1):  #while loop representing sleep state
         
-        Msg = device.read_data(100000)
+        #Msg = device.read_data(100000)
+        Msg = "hs:requesting data"
 
         if Msg:    
             remote_device, data = generate_answer(Msg)
-            device.send_data(remote_device, data)
+            #device.send_data(remote_device, data)
+            print(remote_device, data)
 
 
 if __name__ == "__main__":
