@@ -14,22 +14,27 @@ def checkForTransmissions():
         content = Msg.data
         print("new message")
         content = content.decode()
-        
+        if not content[:2] == "ms:"
+            return False
+
         hashedData = hasData(content).hexdigest()
         
         sendData(hashedData,Msg.remote_device)
         
         response = device.read_data(100000)
-
+        if not response.remote_device == Msg.remote_device :
+            while not response.remote_device == Msg.remote_device :
+                response = device.read_data(100000)
+        
         if response :
             responseContent = response.data
             responseContent =responseContent.decode()
-            if responseContent == "data_ok" :
+            if responseContent == "an:ok" :
                 storeData(content)
                 return True
             else :
                 print("NOPE")
-
+                return False
     else : return False
 
 def checkForCoordinator():
@@ -54,7 +59,7 @@ def checkForCoordinator():
                 responseContent = response.data
                 responseContent =responseContent.decode()
                 if responseContent == hashData :
-                    sendData("data_ok",Msg.remote_device)
+                    sendData("data_ok", Msg.remote_device)
                     print("data sent")
                     os.remove("data.txt")
                 else :
