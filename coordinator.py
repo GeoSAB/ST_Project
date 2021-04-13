@@ -42,8 +42,6 @@ def generate_answer(Msg):
         print(msg)
         if(bstr == "ms:"):
             hash = generate_hash(msg)
-            print("hash", hash.hexdigest())
-            print("r_h", r_hash.hexdigest())
             if(hash.hexdigest() == r_hash.hexdigest()):
                 data_test.append("an:ok")
             else :
