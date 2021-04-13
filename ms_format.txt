@@ -3,3 +3,6 @@ ms: | it's a message
 an:ok | hash is ok 
 an:nk | the hash is not ok 
 rq: | it's a request
+sv: | send a confirmation that data is saved
+cr: | broadcast from the coordinator
+ro: | broadcast from the router
