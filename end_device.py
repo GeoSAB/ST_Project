@@ -31,6 +31,7 @@ def generate_answer(Msg):
         if (code == "rq"):
             global data_to_send 
             data_to_send = read_sensor_data(num_of_line)
+            #data_to_send = "sensor1:" + data_to_send
             global data_hash 
             data_hash = hashlib.md5(data_to_send.encode()).hexdigest()
             data_to_send = "ms:" + data_to_send
@@ -46,8 +47,6 @@ def generate_answer(Msg):
                 return remote_device, "an:ok"
 
             else:
-                if (num_of_line != 0):
-                    num_of_line -= 1
                 return remote_device, "an:nk"
         else:
             remote_device, "an:unknown"
@@ -59,7 +58,7 @@ def generate_answer(Msg):
 
 def main():
 
-    device = XBeeDevice("/dev/ttyUSB0", 9600)
+    device = XBeeDevice("/dev/ttyUSB1", 9600)
     device.open()
 
     while(1):  #while loop representing sleep state
