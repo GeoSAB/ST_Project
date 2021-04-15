@@ -6,8 +6,22 @@ import os
 
 hashData=""
 contentGlobal = ""
-device = XBeeDevice("/dev/ttyUSB0", 9600)
+device = XBeeDevice("/dev/ttyUSB1", 9600)
 device.open()
+
+messageList=[]
+
+class MessageCheck:
+    def __init__(self,message,hashDigest):
+        self.message = message
+        self.hashDigest = hashDigest
+def isHashInSentList(hs):
+    global messageList
+    for message in messageList :
+        if (message.hashDigest == hs):
+            messageList.remove(message)
+            return True
+    return False
 
 def checkForTransmissions(_message = None, _resp= None):
     print("checking trans")
@@ -34,8 +48,9 @@ def checkForTransmissions(_message = None, _resp= None):
         responseContent =responseContent.decode()
         print("RESP: ",responseContent)
         if responseContent == "an:ok" :
-            contentGlobal = ""
+            
             storeData(contentGlobal)
+            contentGlobal = ""
             return True
         else :
             print("NOPE TRANS")
@@ -43,7 +58,7 @@ def checkForTransmissions(_message = None, _resp= None):
     else : return False
 
 def checkForCoordinator(_message=None, _resp = None):
-    global hashData
+    global hashData,messageList
     if _message:
         content = _message.data
         print("new message COORD")
@@ -59,8 +74,10 @@ def checkForCoordinator(_message=None, _resp = None):
             
             try :
                 sendData(dataToSend,Msg.remote_device)
+                m = MessageCheck(dataToSend,hashData)
+                messageList.append(m)
             except :
-                print("CANT SEND DATA TO COORD")
+                print("CANT SEND DATA TO COORD",Msg.remote_device)
                 return
 
             #response = device.read_data(1000)
@@ -70,11 +87,12 @@ def checkForCoordinator(_message=None, _resp = None):
         responseContent =responseContent.decode()
         print("resp coord",responseContent, "mine",hashData)
         
-        if responseContent[0:3] == "hs:" and responseContent[3:] == hashData :
-            sendData("an:ok", Msg.remote_device)
-            hashData = ""
-            print("data sent")
-            os.remove("data.txt")
+        if responseContent[0:3] == "hs:" :
+            if(isHashInSentList(responseContent[3:])):
+                sendData("an:ok", Msg.remote_device)
+                hashData = ""
+                print("data sent")
+                os.remove("data.txt")
         else :
             print("NOPE COORD")
 
