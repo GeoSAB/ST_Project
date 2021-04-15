@@ -59,7 +59,7 @@ def generate_answer(Msg, coor):
             if(msg == "ok" and message):
                 now = datetime.now()
                 f = open("coor.txt", "a")
-                f.write(now.strftime("%m/%d/%Y, %H:%M:%S") + " | " + message + "\n")
+                f.write(now.strftime("%m/%d/%Y, %H:%M:%S") + " |\n" + message + "\n")
                 message = ""
             else :
                 print("error the data hasn't been received correctly")
