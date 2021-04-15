@@ -50,6 +50,7 @@ def generate_answer(Msg):
         if (code == "rq"):
             global data_to_send 
             data_to_send = read_sensor_data(num_of_line)
+            #data_to_send = "sensor1:" + data_to_send
             global data_hash 
             data_hash = hashlib.md5(data_to_send.encode()).hexdigest()
             data_to_send = "ms:" + data_to_send
