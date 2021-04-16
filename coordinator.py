@@ -98,9 +98,9 @@ def main():
     router_msg = None
 
     while(True):
-        print("ready")
         try:
                 coordinator_device.send_data_broadcast("co:")
+                print("Broadcast")
         except:
             d = datetime.now()
             print("could not broadcast " + d.strftime("%m/%d/%Y, %H:%M:%S"))
