@@ -1,6 +1,6 @@
 #import XBee
 from time import sleep
-from digi.xbee.devices import XBeeDevice
+from digi.xbee.devices import *
 import hashlib
 import os
 
@@ -107,7 +107,7 @@ def checkForCoordinator(_message=None, _resp = None):
         
         if responseContent[0:3] == "hs:" :
             if(isHashInSentList(responseContent[3:])):
-                sendData("an:ok", Msg.remote_device)
+                sendData(("an:"+responseContent[3:]), Msg.remote_device)
                 hashData = ""
                 print("data sent")
                 os.remove("data.txt")

@@ -3,7 +3,7 @@ from time import sleep
 from digi.xbee.devices import *
 import hashlib
 
-data = open("read.txt")
+file = open("read.txt")
 
 class MessageCheck:
     def __init__(self,message,hashDigest):
