@@ -51,7 +51,7 @@ def generate_answer(Msg):
         if (code == "rq"):
             global data_to_send 
             data_to_send = read_sensor_data()
-            if !data_to_send:
+            if not data_to_send:
                 return remote_device, 0, 0
 
             global data_hash 
