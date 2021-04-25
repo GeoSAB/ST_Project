@@ -1,6 +1,6 @@
 #import XBee
 from time import sleep
-from digi.xbee.devices import *
+from digi.xbee.devices import XBeeDevice
 import hashlib
 import os
 
