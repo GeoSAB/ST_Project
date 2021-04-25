@@ -3,19 +3,18 @@ from time import sleep
 from digi.xbee.devices import *
 import hashlib
 
+data = open("read.txt")
+
 class MessageCheck:
     def __init__(self,message,hashDigest):
         self.message = message
         self.hashDigest = hashDigest
 
 
-
-
 messageList = []
 
 data_to_send = ""
 data_hash = ""
-num_of_line = 0
 drone_id = "0013A20041C60D23"
 
 def isHashInSentList(hs):
@@ -27,17 +26,19 @@ def isHashInSentList(hs):
     return False
     
 
-def read_sensor_data(line_num):
-    with open("read.txt") as file:
-        content = file.readlines()
-    return content[num_of_line]
+def read_sensor_data():
+    global file
+    content = file.readline()
+    if not content:
+        return None
+    
+    return content
 
 
 def generate_answer(Msg):
 
     data = Msg.data.decode()
     remote_device = Msg.remote_device
-    global num_of_line
 
     code = data[0:2]
     print(str(remote_device)[0:16])
@@ -49,7 +50,10 @@ def generate_answer(Msg):
 
         if (code == "rq"):
             global data_to_send 
-            data_to_send = read_sensor_data(num_of_line)
+            data_to_send = read_sensor_data()
+            if !data_to_send:
+                return remote_device, 0, 0
+
             global data_hash 
             data_hash = hashlib.md5(data_to_send.encode()).hexdigest()
             data_to_send = "ms:" + data_to_send
@@ -61,7 +65,6 @@ def generate_answer(Msg):
         elif (code == "hs"):
             print("received hash from router:", data[3:], data_hash)
             if (isHashInSentList(data[3:])):
-                num_of_line += 1
                 return remote_device, "an:ok",data_hash
 
             else:
@@ -87,8 +90,10 @@ def main():
         print("message ", (msg.data).decode())
 
         if msg:    
-            remote_device, data ,hash_data = generate_answer(msg)
-            if (remote_device != 0):
+            remote_device, data, hash_data = generate_answer(msg)
+            if (data == 0):
+                continue
+            elif (remote_device != 0):
                 m = MessageCheck(data,hash_data)
                 messageList.append(m)
                 device.send_data(remote_device, data)
