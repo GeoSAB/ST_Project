@@ -9,7 +9,6 @@ data_test = []
 
 remote_device = None
 current_data = "" #store the data while it's being check to see if it's ok
-
 c = False
 
 messageList = []
@@ -94,15 +93,23 @@ def main():
     router_msg = None
 
     while(True):
-        try:
-                coordinator_device.send_data(remote_device, "co:")
-                #print("Broadcast")
-        except:
-            d = datetime.now()
-            print("could not broadcast " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+        router_list = open("router_list.txt", 'r')
+        for l in router_list:
+            tok = l.split()
+            remote_device = RemoteXBeeDevice(coordinator_device, XBee64BitAddress.from_hex_string(tok[0]))
+            try:
+                    d = datetime.now()
+                    coordinator_device.send_data(remote_device, "co:")
+                    print("router " + tok[0] + " in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+                    break
+            except:
+                d = datetime.now()
+                print("router " + tok[0] + " not in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+        l = 0
         
         try:
-            router_msg = coordinator_device.read_data()
+            print("listening")
+            router_msg = coordinator_device.read_data(1)
         except:
             d = datetime.now()
             print("could not read data " + d.strftime("%m/%d/%Y, %H:%M:%S"))

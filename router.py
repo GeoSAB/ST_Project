@@ -8,7 +8,7 @@ hashData=""
 contentGlobal = ""
 device = XBeeDevice("/dev/ttyUSB1", 9600)
 device.open()
-remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string("0013A20041C6287E"))
+remote_device = None
 
 messageList=[]
 messageListE_D=[]
@@ -123,11 +123,15 @@ def sendData(data,remote_device):
     device.send_data(remote_device,data)
 
 def broadcastPresence() :
-    try :
-        #print("router")
-        device.send_data(remote_device,"rq:")
-    except:
-        print("Send error")
+    end_devices = open("End_devices_list.txt", 'r')
+    for l in end_devices :
+        tok = l.split()
+        remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string(tok[0]))
+        try :
+            device.send_data(remote_device,"rq:")
+            break
+        except:
+            print("Send error")
 
 def storeData(data):
     file = open("data.txt","a")
