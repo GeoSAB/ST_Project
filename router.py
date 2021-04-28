@@ -124,25 +124,30 @@ def MD5hashData(data) :
 def sendData(data,remote_device):
     device.send_data(remote_device,data)
 
-def broadcastPresence() :
+def broadcastPresence(n) :
     end_d = open("end_devices_list.txt", 'r')
+    i = 0
     for l in end_d :
-        tok = l.split()
-        print(tok[0])
-        remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string(tok[0]))
-        try :
-            device.send_data(remote_device,"rq:")
-            break
-        except:
-            print("Send error")
+        if i == n :
+            tok = l.split()
+            print(tok[0])
+            remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string(tok[0]))
+            try :
+                device.send_data(remote_device,"rq:")
+                break
+            except:
+                print("Send error")
+        i += 1
 
 def storeData(data):
     file = open("data.txt","a")
     file.writelines(data)
     file.close()
-
+n = 0
+nb_l = (sum(1 for line in open("end_devices_list.txt", 'r')))
 while 1 :
-    broadcastPresence()  
+    broadcastPresence(n)
+    n = (n+1) % nb_l
     Msg = device.read_data()
     if Msg:
         content = Msg.data

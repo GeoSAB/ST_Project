@@ -92,28 +92,33 @@ def main():
     remote_device = RemoteXBeeDevice(coordinator_device, XBee64BitAddress.from_hex_string("0013A20041C60D23"))
 
     router_msg = None
-
+    nb_l = sum(1 for line in open("router_list.txt", 'r'))
+    n = 0
     while(True):
         router_list = open("router_list.txt", 'r')
+        i = 0
         for l in router_list:
-            tok = l.split()
-            remote_device = RemoteXBeeDevice(coordinator_device, XBee64BitAddress.from_hex_string(tok[0]))
-            try:
+            if i == n:
+                tok = l.split()
+                remote_device = RemoteXBeeDevice(coordinator_device, XBee64BitAddress.from_hex_string(tok[0]))
+                try:
+                        d = datetime.now()
+                        coordinator_device.send_data(remote_device, "co:")
+                        print("router " + tok[0] + " in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+                        break
+                except:
                     d = datetime.now()
-                    coordinator_device.send_data(remote_device, "co:")
-                    print("router " + tok[0] + " in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
-                    break
-            except:
-                d = datetime.now()
-                print("router " + tok[0] + " not in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+                    print("router " + tok[0] + " not in range | " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+            i += 1
+
+        n = (n+1) % nb_l
         l = 0
         
         try:
-            print("listening")
             router_msg = coordinator_device.read_data(1)
         except:
             d = datetime.now()
-            print("could not read data " + d.strftime("%m/%d/%Y, %H:%M:%S"))
+            #print("could not read data " + d.strftime("%m/%d/%Y, %H:%M:%S"))
 
         if router_msg:
             generate_answer(router_msg, coordinator_device)
