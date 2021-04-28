@@ -9,6 +9,7 @@ contentGlobal = ""
 #device = XBeeDevice("/dev/ttyUSB1", 9600) #Linux
 device = XBeeDevice("/dev/tty.usbserial-A50285BI", 9600) #Mac
 device.open()
+device.set_sync_ops_timeout(0.5)
 remote_device = None
 
 messageList=[]

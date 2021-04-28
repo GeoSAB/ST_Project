@@ -88,6 +88,7 @@ def main():
     global remote_device
     coordinator_device = XBeeDevice("/dev/tty.usbserial-A50285BI", 9600)
     coordinator_device.open()
+    coordinator_device.set_sync_ops_timeout(0.5)
     remote_device = RemoteXBeeDevice(coordinator_device, XBee64BitAddress.from_hex_string("0013A20041C60D23"))
 
     router_msg = None

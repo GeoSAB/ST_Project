@@ -82,6 +82,7 @@ def main():
     global messageList
     device = XBeeDevice("/dev/ttyUSB0", 9600)
     device.open()
+    device.set_sync_ops_timeout(0.5)
 
     while(1):  #while loop representing sleep state
         
