@@ -6,7 +6,8 @@ import os
 
 hashData=""
 contentGlobal = ""
-device = XBeeDevice("/dev/ttyUSB1", 9600)
+#device = XBeeDevice("/dev/ttyUSB1", 9600) #Linux
+device = XBeeDevice("/dev/tty.usbserial-A50285BI", 9600) #Mac
 device.open()
 remote_device = None
 
@@ -123,9 +124,10 @@ def sendData(data,remote_device):
     device.send_data(remote_device,data)
 
 def broadcastPresence() :
-    end_devices = open("End_devices_list.txt", 'r')
-    for l in end_devices :
+    end_d = open("end_devices_list.txt", 'r')
+    for l in end_d :
         tok = l.split()
+        print(tok[0])
         remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string(tok[0]))
         try :
             device.send_data(remote_device,"rq:")
