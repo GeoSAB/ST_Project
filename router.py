@@ -7,7 +7,7 @@ import time
 
 hashData=""
 contentGlobal = ""
-device = XBeeDevice("/dev/ttyUSB1", 9600)
+device = XBeeDevice("/dev/ttyUSB3", 9600)
 device.open()
 remote_device = RemoteXBeeDevice(device, XBee64BitAddress.from_hex_string("0013A20041C6287E"))
 
@@ -108,7 +108,7 @@ def checkForCoordinator(_message=None, _resp = None):
         
         if responseContent[0:3] == "hs:" :
             if(isHashInSentList(responseContent[3:])):
-                sendData("an:ok", Msg.remote_device)
+                sendData(("an:"+responseContent[3:]), Msg.remote_device)
                 hashData = ""
                 print("data sent")
                 os.remove("data.txt")
@@ -140,7 +140,7 @@ nb_b = 0
 b = False
 while 1 :
     t = time.time()
-    if t > base_t + 15 or nb_b == 0 :
+    if t > base_t + 5 or nb_b == 0 :
         broadcastPresence()
         nb_b = 1
         b = True

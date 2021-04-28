@@ -41,7 +41,7 @@ def generate_answer(Msg):
     remote_device = Msg.remote_device
 
     code = data[0:2]
-    print(str(remote_device)[0:16])
+    print("tessst", str(remote_device)[0:16])
 
     if (str(remote_device)[0:16] == drone_id):
 
@@ -65,7 +65,7 @@ def generate_answer(Msg):
         elif (code == "hs"):
             print("received hash from router:", data[3:], data_hash)
             if (isHashInSentList(data[3:])):
-                return remote_device, "an:ok",data_hash
+                return remote_device, ("an:"+data[3:]),data_hash
 
             else:
               
@@ -80,14 +80,14 @@ def generate_answer(Msg):
 
 def main():
     global messageList
-    device = XBeeDevice("/dev/ttyUSB0", 9600)
+    device = XBeeDevice("/dev/ttyUSB2", 9600)
     device.open()
 
     while(1):  #while loop representing sleep state
         
         print("waiting for message")
         msg = device.read_data(100)
-        print("message ", (msg.data).decode())
+        print("message ", (msg.data).decode(), " ", msg.remote_device)
 
         if msg:    
             remote_device, data, hash_data = generate_answer(msg)

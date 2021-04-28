@@ -12,9 +12,22 @@ remote_device =  None
 current_data = "" #store the data while it's being check to see if it's ok
 
 c = False
+messageList = []
 
 
 #def receive_data(rm_device):
+
+class MessageCheck:
+    def __init__(self,message,hashDigest):
+        self.message = message
+        self.hashDigest = hashDigest
+
+def inMessageList(p):
+    for i in range(0, len(messageList)):
+        print("inmsg", messageList[i].hashDigest)
+        if p == messageList[i].hashDigest:
+            return i
+    return -1
 
     
 def generate_hash(str):
@@ -30,12 +43,10 @@ def generate_answer(Msg, coor):
     global c
     global remote_device
     data_msg = (Msg.data).decode()
-    remote_device = "test"
-    router_ans = None
     bstr = ""
     hash = ""
 
-    if(remote_device): #to be addressed later
+    if(Msg.remote_device): #to be addressed later
         bstr = data_msg[0:3]
         msg = data_msg[3:]
         if(bstr == "ms:"):
@@ -50,40 +61,25 @@ def generate_answer(Msg, coor):
                 st += str(hash.hexdigest())
                 print(st)
                 coor.send_data(Msg.remote_device, st)
-                data.append(msg)
+                m = MessageCheck(msg, hash.hexdigest())
+                messageList.append(m)
                 print("sent")
             except:
                 print("Error while sending the hash")
-            try:
-                router_ans = coor.read_data(100)
-                data_msg = (Msg.data).decode()
-                bstr = data_msg[0:3]
-                msg = data_msg[3:]
-                if (bstr == "an:"):
-                    print(bstr)
-                    print(msg)
-                    if(msg == "ok"):
-                        now = datetime.now()
-                        f = open("data.txt", "a")
-                        f.write(now.strftime("%m/%d/%Y, %H:%M:%S") + " " + data[-1])
-                    else :
-                        print("error the data hasn't been received correctly")
-                        data.remove(-1)
-            
-            except:
-                d = datetime.now()
-                print("could not read data " + d.strftime("%m/%d/%Y, %H:%M:%S"))
 
         elif (bstr == "an:"):
             print(bstr)
             print(msg)
-            if(msg == "ok" and message):
-                now = datetime.now()
-                f = open("coor.txt", "a")
-                f.write(now.strftime("%m/%d/%Y, %H:%M:%S") + " |\n" + message + "\n")
-                message = ""
+            if msg == "nk":
+                print("error the data hasn't been received correctly by the router")
             else :
-                print("error the data hasn't been received correctly")
+                ind = inMessageList(msg)
+                if ind >= 0:
+                    now = datetime.now()
+                    f = open("coor.txt", "a")
+                    f.write(now.strftime("%m/%d/%Y, %H:%M:%S") + " |\n" + messageList[ind].message + "\n")
+                    messageList.pop(ind)
+        
         elif (bstr == "rq:"):
             pass
         else:
