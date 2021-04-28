@@ -3,6 +3,7 @@ from time import sleep
 from digi.xbee.devices import *
 import hashlib
 import os
+import time
 
 hashData=""
 contentGlobal = ""
@@ -107,7 +108,7 @@ def checkForCoordinator(_message=None, _resp = None):
         
         if responseContent[0:3] == "hs:" :
             if(isHashInSentList(responseContent[3:])):
-                sendData(("an:"+responseContent[3:]), Msg.remote_device)
+                sendData("an:ok", Msg.remote_device)
                 hashData = ""
                 print("data sent")
                 os.remove("data.txt")
@@ -125,7 +126,7 @@ def sendData(data,remote_device):
 def broadcastPresence() :
     try :
         #print("router")
-        device.send_data(remote_device,"rq:")
+        device.send_data_broadcast("rq:")
     except:
         print("Send error")
 
@@ -134,8 +135,18 @@ def storeData(data):
     file.writelines(data)
     file.close()
 
+base_t = time.time()
+nb_b = 0
+b = False
 while 1 :
-    broadcastPresence()  
+    t = time.time()
+    if t > base_t + 15 or nb_b == 0 :
+        broadcastPresence()
+        nb_b = 1
+        b = True
+    if b : 
+        base_t = time.time()
+        b = False
     Msg = device.read_data()
     if Msg:
         content = Msg.data

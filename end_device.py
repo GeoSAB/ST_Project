@@ -65,7 +65,7 @@ def generate_answer(Msg):
         elif (code == "hs"):
             print("received hash from router:", data[3:], data_hash)
             if (isHashInSentList(data[3:])):
-                return remote_device, ("an:"+data[3:]),data_hash
+                return remote_device, "an:ok",data_hash
 
             else:
               
@@ -82,7 +82,6 @@ def main():
     global messageList
     device = XBeeDevice("/dev/ttyUSB0", 9600)
     device.open()
-    device.set_sync_ops_timeout(0.5)
 
     while(1):  #while loop representing sleep state
         
